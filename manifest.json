@@ -1,0 +1,56 @@
+{
+  "manifest_version": 3,
+  "name": "tab customization",
+  "version": "2.0.0",
+  "description": "Advanced tab manager: grouping, duplicate cleanup, workspace sessions, search, snooze, and automation.",
+  "permissions": [
+    "tabs",
+    "tabGroups",
+    "storage",
+    "alarms",
+    "contextMenus"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "tab customization",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "commands": {
+    "group-tabs": {
+      "description": "Group tabs using current group preset",
+      "suggested_key": {
+        "default": "Ctrl+Shift+G"
+      }
+    },
+    "remove-duplicates": {
+      "description": "Remove duplicate tabs using current rules",
+      "suggested_key": {
+        "default": "Ctrl+Shift+D"
+      }
+    },
+    "undo-last-removal": {
+      "description": "Undo last duplicate cleanup",
+      "suggested_key": {
+        "default": "Ctrl+Shift+U"
+      }
+    }
+  }
+}

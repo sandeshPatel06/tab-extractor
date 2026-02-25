@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>tab customization - Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>Settings</h1>
+      <p class="hint">Configure advanced tab management rules and automation.</p>
+    </header>
+
+    <div id="status" class="status"></div>
+
+    <div class="settings-grid">
+      <div class="settings-column">
+        <section class="section">
+          <h2>Popup Defaults</h2>
+          <div class="form-group">
+            <label for="default-sort-mode">Default Sort Order</label>
+            <select id="default-sort-mode">
+              <option value="domain">By Domain</option>
+              <option value="title">By Title</option>
+              <option value="recent">By Last Active</option>
+              <option value="pinned">Pinned First</option>
+            </select>
+            <p class="hint">The initial sort order used in the popup.</p>
+          </div>
+
+          <div class="form-group">
+            <label for="default-snooze-value">Default Snooze Duration</label>
+            <div style="display: flex; gap: 12px;">
+              <input type="number" id="default-snooze-value" min="1" max="10080" style="flex: 1;">
+              <select id="default-snooze-unit" style="flex: 1;">
+                <option value="minutes">Minutes</option>
+                <option value="hours">Hours</option>
+              </select>
+            </div>
+            <p class="hint">Preset duration when snoozing tabs from the popup.</p>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>General</h2>
+          <div class="form-group">
+            <label for="scope">Operation Scope</label>
+            <select id="scope">
+              <option value="currentWindow">Current Window</option>
+              <option value="allWindows">All Windows</option>
+            </select>
+            <p class="hint">Affects grouping, cleanup, and sorting.</p>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Duplicates</h2>
+          <div class="form-group">
+            <label for="duplicate-mode">Match Mode</label>
+            <select id="duplicate-mode">
+              <option value="exact">Exact URL</option>
+              <option value="ignoreHash">Ignore Hash (#)</option>
+              <option value="ignoreQuery">Ignore Query Params (?)</option>
+              <option value="domainPath">Domain + Path only</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="keep-rule">Smart Keep Rule</label>
+            <select id="keep-rule">
+              <option value="active">Keep Active</option>
+              <option value="pinned">Keep Pinned</option>
+              <option value="recent">Keep Most Recent</option>
+            </select>
+            <p class="hint">Which tab to preserve during cleanup.</p>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Exclusions</h2>
+          <div class="checkbox-group">
+            <label class="checkbox-item"><input type="checkbox" id="exclude-pinned"> Skip Pinned Tabs</label>
+            <label class="checkbox-item"><input type="checkbox" id="exclude-muted"> Skip Muted Tabs</label>
+            <label class="checkbox-item"><input type="checkbox" id="exclude-audible"> Skip Audible Tags</label>
+          </div>
+          <div class="form-group" style="margin-top: 16px;">
+            <label for="excluded-domains">Excluded Domains</label>
+            <textarea id="excluded-domains" rows="3" placeholder="one-per-line.com"></textarea>
+          </div>
+        </section>
+      </div>
+
+      <div class="settings-column">
+        <section class="section">
+          <h2>Snooze Management</h2>
+          <p class="hint">Tabs hidden and scheduled to wake up.</p>
+          <div id="snooze-list" class="list-container">
+            <div class="list-item">
+              <div class="list-item-meta">No active snoozed tabs.</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Automation</h2>
+          <div class="form-group">
+            <label class="checkbox-item"><input type="checkbox" id="auto-cleanup"> Enable Auto-Cleanup Badge</label>
+          </div>
+          <div class="form-group">
+            <label for="auto-cleanup-interval">Badge Scan Interval (min)</label>
+            <input type="number" id="auto-cleanup-interval" min="5" max="1440">
+          </div>
+          <hr style="border: 0; border-top: 1px solid var(--line); margin: 24px 0;">
+          <div class="form-group">
+            <label class="checkbox-item"><input type="checkbox" id="auto-discard"> Enable Hibernation (RAM)</label>
+          </div>
+          <div class="form-group">
+            <label for="auto-discard-threshold">Discard Idle After (min)</label>
+            <input type="number" id="auto-discard-threshold" min="1" max="1440">
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Workspaces</h2>
+          <div class="form-group" style="display: flex; gap: 8px;">
+            <input id="workspace-name" type="text" placeholder="Name" style="flex: 2;">
+            <button id="btn-save-workspace" class="btn btn-primary" style="flex: 1; padding: 10px 4px;">Save</button>
+          </div>
+
+          <div class="form-group">
+            <label for="workspace-list">Workspaces</label>
+            <select id="workspace-list" size="4" style="height: auto; min-height: 100px;"></select>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <button id="btn-restore-workspace" class="btn btn-primary">Restore</button>
+            <button id="btn-delete-workspace" class="btn" style="background: var(--line);">Delete</button>
+          </div>
+
+          <div style="display: flex; gap: 8px; margin-top: 8px;">
+            <button id="btn-export-workspaces" class="btn"
+              style="flex: 1; background: var(--line); font-size: 11px; padding: 6px;">Export</button>
+            <button id="btn-import-workspaces" class="btn"
+              style="flex: 1; background: var(--line); font-size: 11px; padding: 6px;">Import</button>
+            <input id="import-file" type="file" accept="application/json" style="display: none;">
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Tab Grouping</h2>
+          <div class="form-group">
+            <label for="group-preset">Preset</label>
+            <select id="group-preset">
+              <option value="domain">By Domain</option>
+              <option value="subdomain">By Subdomain</option>
+              <option value="custom">Custom Rules</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="custom-group-rules">Custom Rules</label>
+            <textarea id="custom-group-rules" rows="3" placeholder="github.com => Work"></textarea>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="save" class="btn btn-primary">Save Settings</button>
+    </div>
+  </div>
+  <script src="options.js"></script>
+</body>
+
+</html>

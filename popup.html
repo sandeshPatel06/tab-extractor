@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>tab customization</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <main class="container">
+    <header class="header">
+      <div class="row" style="gap: 8px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary)">
+          <path d="M12 2H2v10h10V2zM22 12H12v10h10V12zM12 12H2v10h10V12zM22 2H12v10h10V2z" />
+        </svg>
+        <h1 class="title">tab customization</h1>
+      </div>
+      <div class="row" style="gap: 8px;">
+        <span id="tab-count" class="tab-count">-</span>
+        <button id="btn-open-settings" class="btn btn-ghost" title="Advanced Settings"
+          style="padding: 4px; border-radius: 6px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <section class="panel">
+      <h2>Actions</h2>
+      <div class="grid three action-grid">
+        <button id="btn-group" class="btn" title="Organize tabs into groups by domain">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7V5c0-1.1.9-2 2-2h2" />
+            <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+            <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+            <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+            <rect width="7" height="7" x="7" y="7" rx="1" />
+          </svg>
+          <span>Group</span>
+        </button>
+        <button id="btn-remove" class="btn btn-danger" title="Close similar tabs">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 6h18" />
+            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+            <line x1="10" x2="10" y1="11" y2="17" />
+            <line x1="14" x2="14" y1="11" y2="17" />
+          </svg>
+          <span>Remove</span>
+        </button>
+        <button id="btn-undo" class="btn" title="Restore recently closed tabs">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7v6h6" />
+            <path d="M21 17a9 9 0 0 0-9-15 9 9 0 0 0-6 2.3L3 13" />
+          </svg>
+          <span>Undo</span>
+        </button>
+        <button id="btn-sort" class="btn" title="Sort tabs A-Z by domain">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="m3 16 4 4 4-4" />
+            <path d="M7 20V4" />
+            <path d="m21 8-4-4-4 4" />
+            <path d="M17 4v16" />
+          </svg>
+          <span>Sort</span>
+        </button>
+        <button id="btn-discard" class="btn" title="Hibernate inactive tabs to save memory">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+          </svg>
+          <span>Dirs</span>
+        </button>
+      </div>
+    </section>
+
+
+
+    <section class="panel">
+      <h2>Search Tabs</h2>
+      <div class="row">
+        <input id="search-query" type="text" placeholder="Search title or URL...">
+        <button id="btn-search" class="btn" title="Search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.3-4.3" />
+          </svg>
+        </button>
+      </div>
+      <div id="search-results" class="results"></div>
+    </section>
+
+    <div id="status" class="status hidden"></div>
+  </main>
+
+  <script src="popup.js"></script>
+</body>
+
+</html>
