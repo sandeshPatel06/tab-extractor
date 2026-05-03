@@ -199,6 +199,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Handle broken favicons without violating MV3 CSP (no inline onerror)
+  els.openTabsList.addEventListener('error', (e) => {
+    if (e.target && e.target.tagName === 'IMG') {
+      e.target.src = 'icons/icon16.png';
+    }
+  }, true); // true for capture phase, as error events do not bubble
+
+  /**
+   * Escapes HTML characters to prevent XSS attacks and DOM breakage.
+   */
+  function escapeHTML(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
   /**
    * Renders tab lists efficiently using DocumentFragment to prevent DOM layout thrashing.
    */
@@ -224,10 +244,10 @@ document.addEventListener('DOMContentLoaded', () => {
       
       row.innerHTML = `
         <div class="row" style="gap: 12px; flex: 1; min-width: 0;">
-          <img src="${faviconUrl}" class="favicon" onerror="this.src='icons/icon16.png'">
+          <img src="${faviconUrl}" class="favicon" alt="">
           <div class="result-content">
             <div class="result-title-row">
-              <span class="result-title">${tab.title || 'Untitled'}</span>
+              <span class="result-title">${escapeHTML(tab.title || 'Untitled')}</span>
               <div class="indicator-row">
                 ${tab.audible ? `
                   <svg class="tag-icon warning" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -242,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ` : ''}
               </div>
             </div>
-            <span class="result-url">${tab.url || ''}</span>
+            <span class="result-url">${escapeHTML(tab.url || '')}</span>
           </div>
         </div>
         <div class="row" style="gap: 4px;">
