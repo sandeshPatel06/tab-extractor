@@ -37,6 +37,11 @@ const DEFAULT_SETTINGS = {
 
 chrome.runtime.onInstalled.addListener(() => {
   void initializeExtension();
+  chrome.contextMenus.create({
+    id: MENU_ID_CLOSE_DUPLICATES,
+    title: "Close all duplicates of this tab",
+    contexts: ["page"],
+  });
 });
 
 chrome.runtime.onStartup.addListener(() => {
@@ -49,14 +54,6 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
   void syncAutoCleanupAlarm(nextSettings);
   void syncAutoDiscardAlarm(nextSettings);
   void updateAutoCleanupBadge(nextSettings);
-});
-
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.contextMenus.create({
-    id: MENU_ID_CLOSE_DUPLICATES,
-    title: "Close all duplicates of this tab",
-    contexts: ["page"],
-  });
 });
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
@@ -224,6 +221,14 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 
       case "focusTab":
         return focusTab(message.tabId, message.windowId);
+
+      case "closeTab":
+        try {
+          await chrome.tabs.remove(message.tabId);
+          return { success: true };
+        } catch (err) {
+          return { success: false, error: err.message };
+        }
 
       case "discardInactive":
         return runAutoDiscardScan(true);
@@ -1028,11 +1033,8 @@ function createTabComparator(sortBy, sortDirection = "asc") {
     return (a, b) => multiplier * String(a.title || "").localeCompare(String(b.title || ""));
   }
 
-  if (sortBy === "recent") {
-    // multiplier * multiplier -> Since original recent sort is (b-a) which is descending by default
-    // If we want asc, we swap them.
-    return (a, b) => multiplier * ((b.lastAccessed || 0) - (a.lastAccessed || 0));
-  }
+    // For time: asc = oldest first (lower value first), desc = newest first (higher value first)
+    return (a, b) => multiplier * ((a.lastAccessed || 0) - (b.lastAccessed || 0));
 
   if (sortBy === "pinned") {
     return (a, b) => {

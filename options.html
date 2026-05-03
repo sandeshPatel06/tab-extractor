@@ -3,173 +3,349 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>tab customization - Settings</title>
+  <title>Tab Manager Pro - Settings</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="options.css">
 </head>
 
 <body>
-  <div class="container">
-    <header>
-      <img src="icons/icon48.png" width="32" height="32" alt="icon">
-      <h1>Settings</h1>
-    </header>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="logo">
+        <img src="icons/icon48.png" alt="icon">
+        <span>Tab Manager</span>
+      </div>
+      <nav class="nav">
+        <div class="nav-item active" data-section="general">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          General
+        </div>
+        <div class="nav-item" data-section="cleanup">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+          Automation
+        </div>
+        <div class="nav-item" data-section="workspaces">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+          Workspaces
+        </div>
+        <div class="nav-item" data-section="advanced">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+          Advanced
+        </div>
+      </nav>
+    </aside>
 
-    <div id="status" class="status"></div>
+    <main class="main-content">
+      <div id="status">Settings Applied Successfully</div>
 
-    <div class="settings-grid">
-      <div class="settings-column">
-        <section class="section">
-          <h2>Popup Defaults</h2>
-          <div class="form-group">
-            <label for="default-sort-mode">Default Sort Order</label>
-            <select id="default-sort-mode">
-              <option value="domain">By Domain</option>
-              <option value="title">By Title</option>
-              <option value="recent">By Last Active</option>
-              <option value="pinned">Pinned First</option>
-            </select>
-            <p class="hint">The initial sort order used in the popup.</p>
+      <!-- General Section -->
+      <section id="section-general" class="content-section active">
+        <div class="section-header">
+          <h1>General Settings</h1>
+          <p class="subtitle">Customize how the extension behaves globally.</p>
+        </div>
+        
+        <div class="card">
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+              </div>
+              <div class="setting-text-group">
+                <label for="default-sort-mode">Default Sort Order</label>
+                <p class="help-text">Choose the default arrangement of your open tabs when you open the popup interface. This helps you find specific tabs faster.</p>
+              </div>
+            </div>
+            <div class="setting-control">
+              <select id="default-sort-mode">
+                <option value="domain">By Domain (Default)</option>
+                <option value="title">Alphabetical (By Title)</option>
+                <option value="recent">By Last Active Time</option>
+                <option value="pinned">Pinned Tabs First</option>
+              </select>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label for="default-snooze-value">Default Snooze Duration</label>
-            <div style="display: flex; gap: 12px;">
-              <input type="number" id="default-snooze-value" min="1" max="10080" style="flex: 1;">
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+              </div>
+              <div class="setting-text-group">
+                <label for="scope">Operation Scope</label>
+                <p class="help-text">Select whether tab actions (like grouping or closing duplicates) should affect all your open browser windows simultaneously, or just your current active window.</p>
+              </div>
+            </div>
+            <div class="setting-control">
+              <select id="scope">
+                <option value="currentWindow">Current Window Only</option>
+                <option value="allWindows">All Open Windows</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </div>
+              <div class="setting-text-group">
+                <label>Default Snooze Duration</label>
+                <p class="help-text">Set the default time duration used when you hit "snooze" on a tab. The tab will be hidden and re-open automatically after this time.</p>
+              </div>
+            </div>
+            <div class="setting-control">
+              <input type="number" id="default-snooze-value" min="1" max="10080" style="width: 100px;">
               <select id="default-snooze-unit" style="flex: 1;">
                 <option value="minutes">Minutes</option>
                 <option value="hours">Hours</option>
               </select>
             </div>
-            <p class="hint">Preset duration when snoozing tabs from the popup.</p>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section class="section">
-          <h2>General</h2>
-          <div class="form-group">
-            <label for="scope">Operation Scope</label>
-            <select id="scope">
-              <option value="currentWindow">Current Window</option>
-              <option value="allWindows">All Windows</option>
-            </select>
-            <p class="hint">Affects grouping, cleanup, and sorting.</p>
-          </div>
-        </section>
+      <!-- Automation Section -->
+      <section id="section-cleanup" class="content-section">
+        <div class="section-header">
+          <h1>Automation & Cleanup</h1>
+          <p class="subtitle">Set up rules for automatic tab management and memory saving.</p>
+        </div>
 
-        <section class="section">
-          <h2>Duplicates</h2>
-          <div class="form-group">
-            <label for="duplicate-mode">Match Mode</label>
-            <select id="duplicate-mode">
-              <option value="exact">Exact URL</option>
-              <option value="ignoreHash">Ignore Hash (#)</option>
-              <option value="ignoreQuery">Ignore Query Params (?)</option>
-              <option value="domainPath">Domain + Path only</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="keep-rule">Smart Keep Rule</label>
-            <select id="keep-rule">
-              <option value="active">Keep Active</option>
-              <option value="pinned">Keep Pinned</option>
-              <option value="recent">Keep Most Recent</option>
-            </select>
-            <p class="hint">Which tab to preserve during cleanup.</p>
-          </div>
-        </section>
-
-        <section class="section">
-          <h2>Exclusions</h2>
-          <div class="checkbox-group">
-            <label class="checkbox-item"><input type="checkbox" id="exclude-pinned"> Skip Pinned Tabs</label>
-            <label class="checkbox-item"><input type="checkbox" id="exclude-muted"> Skip Muted Tabs</label>
-            <label class="checkbox-item"><input type="checkbox" id="exclude-audible"> Skip Audible Tags</label>
-          </div>
-          <div class="form-group" style="margin-top: 16px;">
-            <label for="excluded-domains">Excluded Domains</label>
-            <textarea id="excluded-domains" rows="3" placeholder="one-per-line.com"></textarea>
-          </div>
-        </section>
-      </div>
-
-      <div class="settings-column">
-        <section class="section">
-          <h2>Snooze Management</h2>
-          <p class="hint">Tabs hidden and scheduled to wake up.</p>
-          <div id="snooze-list" class="list-container">
-            <div class="list-item">
-              <div class="list-item-meta">No active snoozed tabs.</div>
+        <div class="card">
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </div>
+              <div class="setting-text-group">
+                <label for="duplicate-mode">Duplicate Matching Rule</label>
+                <p class="help-text">Define exactly how the extension decides if a tab is a "duplicate". Ignoring query parameters helps merge links that have tracking codes (like ?utm_source).</p>
+              </div>
+            </div>
+            <div class="setting-control">
+              <select id="duplicate-mode">
+                <option value="exact">Exact URL Match</option>
+                <option value="ignoreHash">Ignore Hash (#)</option>
+                <option value="ignoreQuery">Ignore Query (?)</option>
+                <option value="domainPath">Domain + Path Only</option>
+              </select>
             </div>
           </div>
-        </section>
 
-        <section class="section">
-          <h2>Automation</h2>
-          <div class="form-group">
-            <label class="checkbox-item"><input type="checkbox" id="auto-cleanup"> Enable Auto-Cleanup Badge</label>
-          </div>
-          <div class="form-group">
-            <label for="auto-cleanup-interval">Badge Scan Interval (min)</label>
-            <input type="number" id="auto-cleanup-interval" min="5" max="1440">
-          </div>
-          <hr style="border: 0; border-top: 1px solid var(--line); margin: 24px 0;">
-          <div class="form-group">
-            <label class="checkbox-item"><input type="checkbox" id="auto-discard"> Enable Hibernation (RAM)</label>
-          </div>
-          <div class="form-group">
-            <label for="auto-discard-threshold">Discard Idle After (min)</label>
-            <input type="number" id="auto-discard-threshold" min="1" max="1440">
-          </div>
-        </section>
-
-        <section class="section">
-          <h2>Workspaces</h2>
-          <div class="form-group" style="display: flex; gap: 8px;">
-            <input id="workspace-name" type="text" placeholder="Name" style="flex: 2;">
-            <button id="btn-save-workspace" class="btn btn-primary" style="flex: 1; padding: 10px 4px;">Save</button>
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              </div>
+              <div class="setting-text-group">
+                <label for="keep-rule">Duplicate Preservation Rule</label>
+                <p class="help-text">When multiple identical tabs are found, decide which single tab should survive the cleanup process.</p>
+              </div>
+            </div>
+            <div class="setting-control">
+              <select id="keep-rule">
+                <option value="active">Keep Active Tab</option>
+                <option value="pinned">Keep Pinned Tab</option>
+                <option value="recent">Keep Most Recently Used</option>
+              </select>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label for="workspace-list">Workspaces</label>
-            <select id="workspace-list" size="4" style="height: auto; min-height: 100px;"></select>
+          <div class="setting-row column">
+            <div class="setting-info" style="width: 100%; padding-right: 0;">
+              <div class="setting-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              </div>
+              <label class="checkbox-wrap">
+                <input type="checkbox" id="auto-cleanup">
+                <div class="setting-text-group">
+                  <label>Enable Smart Cleanup Badge</label>
+                  <p class="help-text">Shows a real-time badge count on the extension icon indicating how many duplicate tabs are currently open.</p>
+                </div>
+              </label>
+            </div>
+            <div class="checkbox-subgroup">
+              <div class="setting-row" style="border: none; padding: 0;">
+                <div class="setting-info">
+                  <div class="setting-text-group">
+                    <label for="auto-cleanup-interval">Scan Interval</label>
+                    <p class="help-text">How often the extension checks for duplicates in the background (in minutes).</p>
+                  </div>
+                </div>
+                <div class="setting-control" style="width: 140px;">
+                  <input type="number" id="auto-cleanup-interval" min="5" max="1440">
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-            <button id="btn-restore-workspace" class="btn btn-primary">Restore</button>
-            <button id="btn-delete-workspace" class="btn" style="background: var(--line);">Delete</button>
+          <div class="setting-row column">
+            <div class="setting-info" style="width: 100%; padding-right: 0;">
+              <div class="setting-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 22l5-5"></path><path d="M22 2l-5 5"></path><path d="M12 18v4"></path><path d="M12 2v4"></path><path d="M22 12h-4"></path><path d="M6 12H2"></path></svg>
+              </div>
+              <label class="checkbox-wrap">
+                <input type="checkbox" id="auto-discard">
+                <div class="setting-text-group">
+                  <label>Enable Auto-Hibernation (Memory Saver)</label>
+                  <p class="help-text">Frees up your computer's RAM by automatically suspending background tabs that you haven't looked at for a while.</p>
+                </div>
+              </label>
+            </div>
+            <div class="checkbox-subgroup">
+              <div class="setting-row" style="border: none; padding: 0;">
+                <div class="setting-info">
+                  <div class="setting-text-group">
+                    <label for="auto-discard-threshold">Idle Threshold</label>
+                    <p class="help-text">Time in minutes before an inactive tab is put to sleep.</p>
+                  </div>
+                </div>
+                <div class="setting-control" style="width: 140px;">
+                  <input type="number" id="auto-discard-threshold" min="1" max="1440">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Workspaces Section -->
+      <section id="section-workspaces" class="content-section">
+        <div class="section-header">
+          <h1>Workspaces</h1>
+          <p class="subtitle">Save and restore groups of tabs as complete sessions.</p>
+        </div>
+
+        <div class="card">
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line></svg>
+              </div>
+              <div class="setting-text-group">
+                <label>Create New Workspace</label>
+                <p class="help-text">Save a snapshot of all your currently open tabs into a named session so you can close them now and restore them later.</p>
+              </div>
+            </div>
+            <div class="setting-control" style="width: 320px;">
+              <input id="workspace-name" type="text" placeholder="Workspace name...">
+              <button id="btn-save-workspace" class="btn btn-primary" style="white-space: nowrap;">Save</button>
+            </div>
           </div>
 
-          <div style="display: flex; gap: 8px; margin-top: 8px;">
-            <button id="btn-export-workspaces" class="btn"
-              style="flex: 1; background: var(--line); font-size: 11px; padding: 6px;">Export</button>
-            <button id="btn-import-workspaces" class="btn"
-              style="flex: 1; background: var(--line); font-size: 11px; padding: 6px;">Import</button>
-            <input id="import-file" type="file" accept="application/json" style="display: none;">
+          <div class="setting-row column">
+            <div class="setting-info">
+              <div class="setting-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+              </div>
+              <div class="setting-text-group">
+                <label>Stored Sessions</label>
+                <p class="help-text">Manage your previously saved tab sessions. You can restore them to a new window or delete ones you no longer need.</p>
+              </div>
+            </div>
+            <div class="setting-control" style="width: 100%; flex-direction: column;">
+              <select id="workspace-list" size="6" style="width: 100%;"></select>
+              <div class="workspace-actions">
+                <button id="btn-restore-workspace" class="btn btn-primary">Restore Selected</button>
+                <button id="btn-delete-workspace" class="btn btn-secondary">Delete Session</button>
+              </div>
+            </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section class="section">
-          <h2>Tab Grouping</h2>
-          <div class="form-group">
-            <label for="group-preset">Preset</label>
-            <select id="group-preset">
-              <option value="domain">By Domain</option>
-              <option value="subdomain">By Subdomain</option>
-              <option value="custom">Custom Rules</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="custom-group-rules">Custom Rules</label>
-            <textarea id="custom-group-rules" rows="3" placeholder="github.com => Work"></textarea>
-          </div>
-        </section>
-      </div>
-    </div>
+      <!-- Advanced Section -->
+      <section id="section-advanced" class="content-section">
+        <div class="section-header">
+          <h1>Advanced Logic</h1>
+          <p class="subtitle">Fine-tune grouping patterns and exclusion rules.</p>
+        </div>
 
-    <div class="actions">
-      <button id="save" class="btn btn-primary">Save Settings</button>
+        <div class="card">
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+              </div>
+              <div class="setting-text-group">
+                <label for="group-preset">Grouping Strategy</label>
+                <p class="help-text">The primary logic used when you click the "Group" action. By default, it groups tabs sharing the same main domain.</p>
+              </div>
+            </div>
+            <div class="setting-control">
+              <select id="group-preset">
+                <option value="domain">By Domain</option>
+                <option value="subdomain">By Subdomain</option>
+                <option value="custom">Custom Rules</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="setting-row column">
+            <div class="setting-info">
+              <div class="setting-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+              </div>
+              <div class="setting-text-group">
+                <label for="custom-group-rules">Custom Grouping Rules</label>
+                <p class="help-text">Write custom override rules for grouping. Format must be exactly <code>domain.com => Label Name</code> (one per line).</p>
+              </div>
+            </div>
+            <div class="setting-control" style="width: 100%;">
+              <textarea id="custom-group-rules" rows="4" placeholder="github.com => Work&#10;youtube.com => Media"></textarea>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+              </div>
+              <div class="setting-text-group">
+                <label>Global Exclusions</label>
+                <p class="help-text">Select which types of tabs (like media-playing or pinned tabs) should be strictly ignored during automated actions.</p>
+              </div>
+            </div>
+            <div class="setting-control" style="flex-direction: column; width: auto; min-width: 200px;">
+              <label class="checkbox-wrap">
+                <input type="checkbox" id="exclude-pinned">
+                <div class="setting-text-group"><label>Skip Pinned Tabs</label></div>
+              </label>
+              <label class="checkbox-wrap">
+                <input type="checkbox" id="exclude-muted">
+                <div class="setting-text-group"><label>Skip Muted Tabs</label></div>
+              </label>
+              <label class="checkbox-wrap">
+                <input type="checkbox" id="exclude-audible">
+                <div class="setting-text-group"><label>Skip Audible Tabs</label></div>
+              </label>
+            </div>
+          </div>
+
+          <div class="setting-row column">
+            <div class="setting-info">
+              <div class="setting-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+              </div>
+              <div class="setting-text-group">
+                <label for="excluded-domains">Ignored Domains</label>
+                <p class="help-text">Add a list of specific websites that the extension should never touch or group automatically (one per line).</p>
+              </div>
+            </div>
+            <div class="setting-control" style="width: 100%;">
+              <textarea id="excluded-domains" rows="4" placeholder="important-site.com&#10;work-portal.local"></textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    
+    <div class="footer-actions">
+      <button id="save" class="btn btn-primary">Apply Changes</button>
     </div>
   </div>
+
   <script src="options.js"></script>
 </body>
 

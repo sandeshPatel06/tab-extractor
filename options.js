@@ -1,265 +1,160 @@
-/**
- * options.js — tab customization settings logic
- */
+const browserAPI = typeof chrome !== 'undefined' ? chrome : browser;
 
-const els = {
-  save: document.getElementById("save"),
-  status: document.getElementById("status"),
-
-  scope: document.getElementById("scope"),
-  duplicateMode: document.getElementById("duplicate-mode"),
-  keepRule: document.getElementById("keep-rule"),
-  groupPreset: document.getElementById("group-preset"),
-
-  excludePinned: document.getElementById("exclude-pinned"),
-  excludeMuted: document.getElementById("exclude-muted"),
-  excludeAudible: document.getElementById("exclude-audible"),
-  excludedDomains: document.getElementById("excluded-domains"),
-
-  autoCleanup: document.getElementById("auto-cleanup"),
-  autoCleanupInterval: document.getElementById("auto-cleanup-interval"),
-  autoDiscard: document.getElementById("auto-discard"),
-  autoDiscardThreshold: document.getElementById("auto-discard-threshold"),
-
-  defaultSortMode: document.getElementById("default-sort-mode"),
-  defaultSnoozeValue: document.getElementById("default-snooze-value"),
-  defaultSnoozeUnit: document.getElementById("default-snooze-unit"),
-
-  customGroupRules: document.getElementById("custom-group-rules"),
-
-  snoozeList: document.getElementById("snooze-list"),
-
-  workspaceName: document.getElementById("workspace-name"),
-  workspaceList: document.getElementById("workspace-list"),
-  btnSaveWorkspace: document.getElementById("btn-save-workspace"),
-  btnRestoreWorkspace: document.getElementById("btn-restore-workspace"),
-  btnDeleteWorkspace: document.getElementById("btn-delete-workspace"),
-  btnExportWorkspaces: document.getElementById("btn-export-workspaces"),
-  btnImportWorkspaces: document.getElementById("btn-import-workspaces"),
-  importFile: document.getElementById("import-file"),
-};
-
-document.addEventListener("DOMContentLoaded", init);
-els.save.addEventListener("click", saveSettings);
-
-async function init() {
-  await loadSettings();
-  await loadSnoozedTabs();
-  const initData = await sendMessage({ action: "initPopup" });
-  if (initData.success) {
-    renderWorkspaces(initData.workspaces || []);
-  }
-  bindWorkspaceEvents();
-}
-
-async function loadSettings() {
-  const result = await chrome.runtime.sendMessage({ action: "getSettings" });
-  if (!result.success) return;
-
-  const s = result.settings;
-  els.scope.value = s.scope;
-  els.duplicateMode.value = s.duplicateMatchMode;
-  els.keepRule.value = s.smartKeepRule;
-  els.groupPreset.value = s.groupPreset;
-
-  els.excludePinned.checked = !!s.excludePinned;
-  els.excludeMuted.checked = !!s.excludeMuted;
-  els.excludeAudible.checked = !!s.excludeAudible;
-  els.excludedDomains.value = s.excludedDomains || "";
-
-  els.autoCleanup.checked = !!s.autoCleanup;
-  els.autoCleanupInterval.value = s.autoCleanupIntervalMin || 30;
-  els.autoDiscard.checked = !!s.autoDiscard;
-  els.autoDiscardThreshold.value = s.autoDiscardThresholdMin || 60;
-
-  els.defaultSortMode.value = s.defaultSortMode || "domain";
-  els.defaultSnoozeValue.value = s.defaultSnoozeValue || 60;
-  els.defaultSnoozeUnit.value = s.defaultSnoozeUnit || "minutes";
-
-  els.customGroupRules.value = s.customGroupRules || "";
-}
-
-async function saveSettings() {
-  const settings = {
-    scope: els.scope.value,
-    duplicateMatchMode: els.duplicateMode.value,
-    smartKeepRule: els.keepRule.value,
-    groupPreset: els.groupPreset.value,
-
-    excludePinned: els.excludePinned.checked,
-    excludeMuted: els.excludeMuted.checked,
-    excludeAudible: els.excludeAudible.checked,
-    excludedDomains: els.excludedDomains.value,
-
-    autoCleanup: els.autoCleanup.checked,
-    autoCleanupIntervalMin: parseInt(els.autoCleanupInterval.value, 10),
-    autoDiscard: els.autoDiscard.checked,
-    autoDiscardThresholdMin: parseInt(els.autoDiscardThreshold.value, 10),
-
-    defaultSortMode: els.defaultSortMode.value,
-    defaultSnoozeValue: parseInt(els.defaultSnoozeValue.value, 10),
-    defaultSnoozeUnit: els.defaultSnoozeUnit.value,
-
-    customGroupRules: els.customGroupRules.value,
+document.addEventListener('DOMContentLoaded', () => {
+  const els = {
+    saveBtn: document.getElementById('save'),
+    status: document.getElementById('status'),
+    workspaceList: document.getElementById('workspace-list'),
+    workspaceName: document.getElementById('workspace-name'),
+    btnSaveWorkspace: document.getElementById('btn-save-workspace'),
+    btnRestoreWorkspace: document.getElementById('btn-restore-workspace'),
+    btnDeleteWorkspace: document.getElementById('btn-delete-workspace')
   };
 
-  const result = await chrome.runtime.sendMessage({
-    action: "updateSettings",
-    settings,
-  });
+  const configIds = [
+    'default-sort-mode', 'default-snooze-value', 'default-snooze-unit',
+    'scope', 'duplicate-mode', 'keep-rule', 'exclude-pinned', 
+    'exclude-muted', 'exclude-audible', 'excluded-domains',
+    'auto-cleanup', 'auto-cleanup-interval', 'auto-discard', 
+    'auto-discard-threshold', 'group-preset', 'custom-group-rules'
+  ];
 
-  if (result.success) {
-    showStatus("Settings saved successfully!", "success");
-  } else {
-    showStatus("Error saving settings: " + result.error, "error");
-  }
-}
-
-function showStatus(text, tone) {
-  els.status.textContent = text;
-  els.status.className = `status ${tone}`;
-  setTimeout(() => {
-    els.status.className = "status";
-  }, 3000);
-}
-
-function bindWorkspaceEvents() {
-  els.btnSaveWorkspace.addEventListener("click", async () => {
-    const result = await sendMessage({
-      action: "saveWorkspace",
-      name: els.workspaceName.value,
-      scope: els.scope.value,
-    });
-
-    if (result.success) {
-      renderWorkspaces(result.workspaces);
-      els.workspaceName.value = "";
-      showStatus("Workspace saved!", "success");
-    } else {
-      showStatus("Save failed: " + result.error, "error");
-    }
-  });
-
-  els.btnRestoreWorkspace.addEventListener("click", async () => {
-    const id = els.workspaceList.value;
-    if (!id) return showStatus("Select a workspace", "error");
-
-    const result = await sendMessage({ action: "restoreWorkspace", id });
-    if (result.success) {
-      showStatus(`Restored ${result.restored} tabs`, "success");
-    } else {
-      showStatus("Restore failed: " + result.error, "error");
-    }
-  });
-
-  els.btnDeleteWorkspace.addEventListener("click", async () => {
-    const id = els.workspaceList.value;
-    if (!id) return showStatus("Select a workspace", "error");
-
-    const result = await sendMessage({ action: "deleteWorkspace", id });
-    if (result.success) {
-      renderWorkspaces(result.workspaces);
-      showStatus("Workspace deleted", "success");
-    } else {
-      showStatus("Delete failed: " + result.error, "error");
-    }
-  });
-
-  els.btnExportWorkspaces.addEventListener("click", async () => {
-    const result = await sendMessage({ action: "exportWorkspaces" });
-    if (result.success) {
-      const blob = new Blob([JSON.stringify(result.data, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `workspaces-${new Date().toISOString().slice(0, 10)}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-  });
-
-  els.btnImportWorkspaces.addEventListener("click", () => els.importFile.click());
-  els.importFile.addEventListener("change", async () => {
-    const file = els.importFile.files[0];
-    if (!file) return;
-    const text = await file.text();
-    const result = await sendMessage({ action: "importWorkspaces", payload: text });
-    if (result.success) {
-      renderWorkspaces(result.workspaces);
-      showStatus("Workspaces imported!", "success");
-    } else {
-      showStatus("Import failed: " + result.error, "error");
-    }
-    els.importFile.value = "";
-  });
-}
-
-function renderWorkspaces(workspaces) {
-  els.workspaceList.innerHTML = "";
-  if (!workspaces || workspaces.length === 0) {
-    els.workspaceList.innerHTML = '<option value="">No saved workspaces</option>';
-    return;
-  }
-  workspaces.forEach(ws => {
-    const opt = document.createElement("option");
-    opt.value = ws.id;
-    opt.textContent = `${ws.name} (${ws.tabs.length})`;
-    els.workspaceList.appendChild(opt);
-  });
-}
-
-async function loadSnoozedTabs() {
-  const result = await sendMessage({ action: "listSnoozedTabs" });
-  renderSnoozeList(result.tabs || []);
-}
-
-function renderSnoozeList(tabs) {
-  els.snoozeList.innerHTML = "";
-  if (!tabs || tabs.length === 0) {
-    els.snoozeList.innerHTML = '<div class="list-item"><div class="list-item-meta">No active snoozed tabs.</div></div>';
-    return;
+  // Init
+  async function init() {
+    await loadSettings();
+    const { workspaces } = await sendMessage({ action: 'listWorkspaces' });
+    renderWorkspaces(workspaces || []);
   }
 
-  tabs.forEach(tab => {
-    const item = document.createElement("div");
-    item.className = "list-item";
+  // Load
+  async function loadSettings() {
+    const result = await sendMessage({ action: 'getSettings' });
+    if (!result.success) return;
 
-    const meta = document.createElement("div");
-    meta.className = "list-item-meta";
+    const s = result.settings;
+    document.getElementById('default-sort-mode').value = s.defaultSortMode || 'domain';
+    document.getElementById('default-snooze-value').value = s.defaultSnoozeValue || 60;
+    document.getElementById('default-snooze-unit').value = s.defaultSnoozeUnit || 'minutes';
+    document.getElementById('scope').value = s.scope || 'currentWindow';
+    document.getElementById('duplicate-mode').value = s.duplicateMatchMode || 'exact';
+    document.getElementById('keep-rule').value = s.smartKeepRule || 'active';
+    document.getElementById('group-preset').value = s.groupPreset || 'domain';
+    
+    document.getElementById('exclude-pinned').checked = !!s.excludePinned;
+    document.getElementById('exclude-muted').checked = !!s.excludeMuted;
+    document.getElementById('exclude-audible').checked = !!s.excludeAudible;
+    document.getElementById('excluded-domains').value = s.excludedDomains || '';
+    
+    document.getElementById('auto-cleanup').checked = !!s.autoCleanup;
+    document.getElementById('auto-cleanup-interval').value = s.autoCleanupIntervalMin || 30;
+    document.getElementById('auto-discard').checked = !!s.autoDiscard;
+    document.getElementById('auto-discard-threshold').value = s.autoDiscardThresholdMin || 60;
+    
+    document.getElementById('custom-group-rules').value = s.customGroupRules || '';
+  }
 
-    const title = document.createElement("div");
-    title.className = "list-item-title";
-    title.textContent = tab.title || "Untitled Tab";
-
-    const sub = document.createElement("div");
-    sub.className = "list-item-sub";
-    const wakeAt = new Date(tab.wakeAt).toLocaleString();
-    sub.textContent = `Wakes up at: ${wakeAt}`;
-
-    meta.appendChild(title);
-    meta.appendChild(sub);
-
-    const btn = document.createElement("button");
-    btn.className = "btn";
-    btn.style.padding = "6px 12px";
-    btn.style.fontSize = "12px";
-    btn.textContent = "Unsnooze";
-    btn.onclick = async () => {
-      const res = await sendMessage({ action: "unsnoozeTab", id: tab.id });
-      if (res.success) {
-        showStatus("Tab unsnoozed!", "success");
-        await loadSnoozedTabs();
-      }
+  // Save
+  async function saveSettings() {
+    const settings = {
+      defaultSortMode: document.getElementById('default-sort-mode').value,
+      defaultSnoozeValue: parseInt(document.getElementById('default-snooze-value').value),
+      defaultSnoozeUnit: document.getElementById('default-snooze-unit').value,
+      scope: document.getElementById('scope').value,
+      duplicateMatchMode: document.getElementById('duplicate-mode').value,
+      smartKeepRule: document.getElementById('keep-rule').value,
+      groupPreset: document.getElementById('group-preset').value,
+      
+      excludePinned: document.getElementById('exclude-pinned').checked,
+      excludeMuted: document.getElementById('exclude-muted').checked,
+      excludeAudible: document.getElementById('exclude-audible').checked,
+      excludedDomains: document.getElementById('excluded-domains').value,
+      
+      autoCleanup: document.getElementById('auto-cleanup').checked,
+      autoCleanupIntervalMin: parseInt(document.getElementById('auto-cleanup-interval').value),
+      autoDiscard: document.getElementById('auto-discard').checked,
+      autoDiscardThresholdMin: parseInt(document.getElementById('auto-discard-threshold').value),
+      
+      customGroupRules: document.getElementById('custom-group-rules').value
     };
 
-    item.appendChild(meta);
-    item.appendChild(btn);
-    els.snoozeList.appendChild(item);
-  });
-}
+    const result = await sendMessage({ action: 'updateSettings', settings });
+    if (result.success) {
+      showStatus('Settings Applied Successfully');
+    }
+  }
 
-function sendMessage(msg) {
-  return new Promise(resolve => {
-    chrome.runtime.sendMessage(msg, resolve);
+  // Workspaces
+  function renderWorkspaces(workspaces) {
+    els.workspaceList.innerHTML = '';
+    if (!workspaces.length) {
+      els.workspaceList.innerHTML = '<option value="">No workspaces found</option>';
+      return;
+    }
+    workspaces.forEach(ws => {
+      const opt = document.createElement('option');
+      opt.value = ws.id;
+      opt.textContent = `${ws.name} (${ws.tabs.length} tabs)`;
+      els.workspaceList.appendChild(opt);
+    });
+  }
+
+  function showStatus(msg) {
+    els.status.textContent = msg;
+    els.status.classList.add('show');
+    setTimeout(() => els.status.classList.remove('show'), 3000);
+  }
+
+  function sendMessage(msg) {
+    return new Promise(resolve => {
+      browserAPI.runtime.sendMessage(msg, resolve);
+    });
+  }
+
+  // Events
+  els.saveBtn.addEventListener('click', saveSettings);
+  
+  els.btnSaveWorkspace.addEventListener('click', async () => {
+    const name = els.workspaceName.value.trim();
+    if (!name) return;
+    const result = await sendMessage({ action: 'saveWorkspace', name, scope: document.getElementById('scope').value });
+    if (result.success) {
+      els.workspaceName.value = '';
+      renderWorkspaces(result.workspaces);
+      showStatus('Workspace Saved');
+    }
   });
-}
+
+  els.btnRestoreWorkspace.addEventListener('click', async () => {
+    const id = els.workspaceList.value;
+    if (!id) return;
+    const result = await sendMessage({ action: 'restoreWorkspace', id });
+    if (result.success) showStatus(`Restored ${result.restored} Tabs`);
+  });
+
+  els.btnDeleteWorkspace.addEventListener('click', async () => {
+    const id = els.workspaceList.value;
+    if (!id) return;
+    const result = await sendMessage({ action: 'deleteWorkspace', id });
+    if (result.success) {
+      renderWorkspaces(result.workspaces);
+      showStatus('Workspace Deleted');
+    }
+  });
+
+  // Sidebar Navigation
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const sectionId = item.getAttribute('data-section');
+      
+      // Update sidebar
+      document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+      item.classList.add('active');
+      
+      // Update sections
+      document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+      document.getElementById(`section-${sectionId}`).classList.add('active');
+    });
+  });
+
+  init();
+});
