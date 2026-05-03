@@ -11,6 +11,7 @@ const STORAGE_KEYS = {
 
 const ALARM_AUTO_CLEANUP = "autoCleanup";
 const ALARM_AUTO_DISCARD = "autoDiscard";
+const ALARM_AUTO_BACKUP = "autoBackup";
 const ALARM_SNOOZE_PREFIX = "snooze:";
 const MENU_ID_CLOSE_DUPLICATES = "closeDuplicates";
 const UNDO_LIMIT = 30;
@@ -63,6 +64,11 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 });
 
 chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === ALARM_AUTO_BACKUP) {
+    void runAutoBackup();
+    return;
+  }
+
   if (alarm.name === ALARM_AUTO_CLEANUP) {
     void runAutoCleanupScan();
     return;
@@ -256,6 +262,10 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
         };
       }
 
+      case "zenMode": {
+        return runZenMode();
+      }
+
       default:
         return {
           success: false,
@@ -282,6 +292,100 @@ async function initializeExtension() {
   await syncAutoDiscardAlarm(settings);
   await rescheduleSnoozeAlarms();
   await updateAutoCleanupBadge(settings);
+  await chrome.alarms.create(ALARM_AUTO_BACKUP, { periodInMinutes: 15 });
+}
+
+async function runAutoBackup() {
+  try {
+    const tabs = await chrome.tabs.query({});
+    const capturedTabs = tabs
+      .filter((tab) => tab?.url && isSupportedTabUrl(tab.url))
+      .map((tab) => ({
+        url: tab.url,
+        pinned: Boolean(tab.pinned),
+        title: tab.title || "",
+      }));
+
+    if (capturedTabs.length === 0) return;
+
+    const workspaces = await listWorkspaces();
+    
+    // Remove old auto-backups if there are more than 3
+    const backupPrefix = "⏱️ Auto-Backup";
+    let autoBackups = workspaces.filter(w => w.name && w.name.startsWith(backupPrefix));
+    
+    if (autoBackups.length >= 3) {
+      // Keep only the 2 newest, we are adding 1
+      const toRemove = autoBackups.slice(2).map(w => w.id);
+      for (const id of toRemove) {
+        const idx = workspaces.findIndex(w => w.id === id);
+        if (idx !== -1) workspaces.splice(idx, 1);
+      }
+    }
+
+    const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const workspace = {
+      id: crypto.randomUUID(),
+      name: `${backupPrefix} (${timeString})`,
+      createdAt: Date.now(),
+      scope: "allWindows",
+      tabs: capturedTabs,
+    };
+
+    workspaces.unshift(workspace);
+    if (workspaces.length > WORKSPACE_LIMIT) {
+      workspaces.length = WORKSPACE_LIMIT;
+    }
+
+    await chrome.storage.local.set({ [STORAGE_KEYS.workspaces]: workspaces });
+  } catch (err) {
+    console.error("[TabManager] Auto-Backup failed:", err);
+  }
+}
+
+async function runZenMode() {
+  try {
+    const allTabs = await chrome.tabs.query({});
+    
+    // Only stash tabs that are not active and not pinned
+    const tabsToStash = allTabs.filter(tab => !tab.active && !tab.pinned && tab.url && isSupportedTabUrl(tab.url));
+    const tabIdsToClose = tabsToStash.map(t => t.id);
+    
+    if (tabsToStash.length === 0) {
+      return { success: false, error: "No background tabs to stash." };
+    }
+
+    const capturedTabs = tabsToStash.map((tab) => ({
+      url: tab.url,
+      pinned: false,
+      title: tab.title || "",
+    }));
+
+    const workspaces = await listWorkspaces();
+    const dateStr = new Date().toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    
+    const workspace = {
+      id: crypto.randomUUID(),
+      name: `🧘 Zen Mode Stash (${dateStr})`,
+      createdAt: Date.now(),
+      scope: "allWindows",
+      tabs: capturedTabs,
+    };
+
+    workspaces.unshift(workspace);
+    if (workspaces.length > WORKSPACE_LIMIT) {
+      workspaces.length = WORKSPACE_LIMIT;
+    }
+
+    await chrome.storage.local.set({ [STORAGE_KEYS.workspaces]: workspaces });
+    
+    // Close the stashed tabs
+    await chrome.tabs.remove(tabIdsToClose);
+    
+    return { success: true, stashedCount: tabsToStash.length };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
 }
 
 async function handleCommand(command) {

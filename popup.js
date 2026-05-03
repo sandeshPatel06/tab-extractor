@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btnOpenSettings: document.getElementById('btn-open-settings'),
     btnGroup: document.getElementById('btn-group'),
     btnRemove: document.getElementById('btn-remove'),
+    btnZen: document.getElementById('btn-zen'),
     btnUndo: document.getElementById('btn-undo'),
     btnSort: document.getElementById('btn-sort'),
     openTabsList: document.getElementById('open-tabs-list'),
@@ -89,6 +90,19 @@ document.addEventListener('DOMContentLoaded', () => {
       loadTabs();
     }
   });
+
+  if (els.btnZen) {
+    els.btnZen.addEventListener('click', async () => {
+      const result = await sendMessage({ action: 'zenMode' });
+      if (result.success) {
+        showStatus(`${result.stashedCount} tabs stashed in Zen Mode.`);
+        updateTabCount();
+        loadTabs();
+      } else {
+        showStatus(result.error || 'No background tabs to stash.', 'error');
+      }
+    });
+  }
 
   els.btnUndo.addEventListener('click', async () => {
     const result = await sendMessage({ action: 'undoLastRemoval' });
@@ -207,17 +221,19 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
       
       if (isOpen) {
-        row.querySelector('.focus-btn').onclick = () => {
+        row.onclick = (e) => {
+          if (e.target.closest('.close-btn')) return;
           browserAPI.runtime.sendMessage({ action: 'focusTab', tabId: tab.id, windowId: tab.windowId });
           window.close();
         };
-        row.querySelector('.close-btn').onclick = async () => {
+        row.querySelector('.close-btn').onclick = async (e) => {
+          e.stopPropagation();
           await browserAPI.runtime.sendMessage({ action: 'closeTab', tabId: tab.id });
           loadTabs();
           updateTabCount();
         };
       } else {
-        row.querySelector('.mini-btn').onclick = async () => {
+        row.onclick = async () => {
           await browserAPI.tabs.create({ url: tab.url, active: false });
           loadTabs();
         };

@@ -197,6 +197,7 @@ body {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
+  cursor: pointer;
 }
 .result-item:hover {
   border-color: var(--text-muted);

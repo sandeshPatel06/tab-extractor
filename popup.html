@@ -54,14 +54,23 @@
         <span>Undo</span>
       </button>
     </div>
-    <button id="btn-remove" class="btn btn-danger" style="width: 100%;" title="Close similar tabs">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 6h18"></path>
-        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-      </svg>
-      <span>Clean Duplicates</span>
-    </button>
+    <div class="grid" style="grid-template-columns: 1fr 1fr;">
+      <button id="btn-zen" class="btn" title="Zen Mode: Instantly save and close all background tabs to clear your mind. You can restore them later from the Workspaces menu in Settings.">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="8" y1="12" x2="16" y2="12"></line>
+        </svg>
+        <span>Zen Mode</span>
+      </button>
+      <button id="btn-remove" class="btn btn-danger" title="Close similar tabs">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6h18"></path>
+          <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+          <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+        </svg>
+        <span>Clean Duplicates</span>
+      </button>
+    </div>
   </section>
 
   <section class="panel open-tabs-panel">
