@@ -660,17 +660,21 @@ async function groupTabsByPreset({ settings, scope, currentWindowId }) {
     if (tabIds.length < 2) continue;
 
     try {
-      const groupId = await chrome.tabs.group({
-        tabIds,
-        createProperties: { windowId },
-      });
-      const color = colors[Math.abs(hashString(title)) % colors.length];
-      await chrome.tabGroups.update(groupId, {
-        title: title.length > 20 ? `${title.slice(0, 18)}..` : title,
-        color,
-        collapsed: false,
-      });
-      groupsCreated += 1;
+      if (browserAPI.tabs.group) {
+        const groupId = await browserAPI.tabs.group({
+          tabIds,
+          createProperties: { windowId },
+        });
+        const color = colors[Math.abs(hashString(title)) % colors.length];
+        if (browserAPI.tabGroups) {
+          await browserAPI.tabGroups.update(groupId, {
+            title: title.length > 20 ? `${title.slice(0, 18)}..` : title,
+            color,
+            collapsed: false,
+          });
+        }
+        groupsCreated += 1;
+      }
     } catch (err) {
       console.warn(`[TabManager] Could not group "${title}":`, err?.message || err);
     }
@@ -859,7 +863,7 @@ async function pushUndoBatch(items) {
     stack.length = UNDO_LIMIT;
   }
 
-  await chrome.storage.local.set({ [STORAGE_KEYS.undoStack]: stack });
+  await browserAPI.storage.local.set({ [STORAGE_KEYS.undoStack]: stack });
 }
 
 async function setGroupsCollapsed({ collapsed, scope, currentWindowId }) {
@@ -868,7 +872,9 @@ async function setGroupsCollapsed({ collapsed, scope, currentWindowId }) {
 
   for (const groupId of groupIds) {
     try {
-      await chrome.tabGroups.update(groupId, { collapsed: Boolean(collapsed) });
+      if (browserAPI.tabGroups) {
+        await browserAPI.tabGroups.update(groupId, { collapsed: Boolean(collapsed) });
+      }
     } catch {
       // Ignore groups that no longer exist.
     }

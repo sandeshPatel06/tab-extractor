@@ -226,7 +226,13 @@ document.addEventListener('DOMContentLoaded', () => {
     container.innerHTML = '';
     
     if (!tabs.length) {
-      container.innerHTML = `<div class="result-item" style="justify-content:center; color:var(--muted); font-size:12px;">No ${isOpen ? 'open' : 'closed'} tabs</div>`;
+      const emptyMsg = document.createElement('div');
+      emptyMsg.className = 'result-item';
+      emptyMsg.style.justifyContent = 'center';
+      emptyMsg.style.color = 'var(--muted)';
+      emptyMsg.style.fontSize = '12px';
+      emptyMsg.textContent = `No ${isOpen ? 'open' : 'closed'} tabs`;
+      container.appendChild(emptyMsg);
       return;
     }
 
@@ -242,56 +248,44 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const faviconUrl = tab.favIconUrl || 'icons/icon16.png';
       
+      // Static structure for the row
       row.innerHTML = `
         <div class="row" style="gap: 12px; flex: 1; min-width: 0;">
-          <img src="${faviconUrl}" class="favicon" alt="">
+          <img class="favicon" alt="">
           <div class="result-content">
             <div class="result-title-row">
-              <span class="result-title">${escapeHTML(tab.title || 'Untitled')}</span>
-              <div class="indicator-row">
-                ${tab.audible ? `
-                  <svg class="tag-icon warning" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                  </svg>
-                ` : ''}
-                ${tab.discarded ? `
-                  <svg class="tag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                  </svg>
-                ` : ''}
-              </div>
+              <span class="result-title"></span>
+              <div class="indicator-row"></div>
             </div>
-            <span class="result-url">${escapeHTML(tab.url || '')}</span>
+            <span class="result-url"></span>
           </div>
         </div>
-        <div class="row" style="gap: 4px;">
-          ${isOpen ? `
-            <button class="mini-btn focus-btn" title="Focus Tab">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="15 3 21 3 21 9"></polyline>
-                <polyline points="9 21 3 21 3 15"></polyline>
-                <line x1="21" y1="3" x2="14" y2="10"></line>
-                <line x1="3" y1="21" x2="10" y2="14"></line>
-              </svg>
-            </button>
-            <button class="mini-btn close-btn" title="Close Tab">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
-          ` : `
-            <button class="mini-btn restore-btn" title="Restore Tab">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
-                <path d="M21 3v5h-5"></path>
-                <polyline points="12 8 12 12 15 15"></polyline>
-              </svg>
-            </button>
-          `}
-        </div>
+        <div class="row btn-container" style="gap: 4px;"></div>
       `;
+      
+      // Safely set attributes and text
+      const img = row.querySelector('.favicon');
+      img.src = faviconUrl;
+
+      row.querySelector('.result-title').textContent = tab.title || 'Untitled';
+      row.querySelector('.result-url').textContent = tab.url || '';
+
+      // Add indicators manually
+      const indicators = row.querySelector('.indicator-row');
+      if (tab.audible) {
+        indicators.innerHTML += '<svg class="tag-icon warning" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>';
+      }
+      if (tab.discarded) {
+        indicators.innerHTML += '<svg class="tag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+      }
+
+      // Add buttons based on state
+      const btnContainer = row.querySelector('.btn-container');
+      if (isOpen) {
+        btnContainer.innerHTML = '<button class="mini-btn focus-btn" title="Focus Tab"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg></button><button class="mini-btn close-btn" title="Close Tab"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>';
+      } else {
+        btnContainer.innerHTML = '<button class="mini-btn restore-btn" title="Restore Tab"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><polyline points="12 8 12 12 15 15"></polyline></svg></button>';
+      }
       
       fragment.appendChild(row);
     });

@@ -8,8 +8,11 @@
   "offline_enabled": true,
   "browser_specific_settings": {
     "gecko": {
-      "id": "tabmanager@sandeshpatel.com",
-      "strict_min_version": "109.0"
+      "id": "tabmanager-pro-sandesh@patel.com",
+      "strict_min_version": "142.0",
+      "data_collection_permissions": {
+        "required": ["interaction"]
+      }
     }
   },
   "permissions": [
