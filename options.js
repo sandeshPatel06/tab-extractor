@@ -1,4 +1,8 @@
-const browserAPI = typeof chrome !== 'undefined' ? chrome : browser;
+/**
+ * Universal browser API wrapper for cross-browser compatibility.
+ * Prefers native `browser` namespace (Firefox) over `chrome` (Chrome/Edge).
+ */
+const browserAPI = typeof browser !== 'undefined' ? browser : chrome;
 
 document.addEventListener('DOMContentLoaded', () => {
   const els = {

@@ -1,6 +1,13 @@
 /**
- * background.js — tab customization service worker
+ * background.js — Tab Manager Service Worker
+ * Handles heavy lifting: tab automation, alarms, storage, and cross-browser APIs.
  */
+
+/**
+ * Universal browser API wrapper for cross-browser compatibility.
+ * Prefers native `browser` namespace (Firefox) over `chrome` (Chrome/Edge).
+ */
+const browserAPI = typeof browser !== 'undefined' ? browser : chrome;
 
 const STORAGE_KEYS = {
   settings: "settings",

@@ -1,4 +1,4 @@
-const browserAPI = typeof chrome !== 'undefined' ? chrome : browser;
+const browserAPI = typeof browser !== 'undefined' ? browser : chrome;
 
 document.addEventListener('DOMContentLoaded', () => {
   const els = {
@@ -17,7 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentWindowId = null;
   let cachedSettings = { scope: 'currentWindow' };
 
-  // Init
+  /**
+   * Initializes the popup by fetching initial state from the background worker.
+   */
   async function init() {
     const win = await browserAPI.windows.getCurrent({ populate: false });
     currentWindowId = win?.id;
@@ -31,7 +33,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Update Undo state
+  /**
+   * Updates the Undo button UI state based on the current undo stack depth.
+   * @param {number} depth - The number of actions available to undo.
+   */
   function updateUndoButton(depth) {
     if (!els.btnUndo) return;
     const span = els.btnUndo.querySelector('span');
@@ -39,14 +44,20 @@ document.addEventListener('DOMContentLoaded', () => {
     els.btnUndo.disabled = depth === 0;
   }
 
-  // Update Tab Count
+  /**
+   * Fetches the current tab count from the browser and updates the header UI.
+   */
   async function updateTabCount() {
     const query = cachedSettings.scope === 'allWindows' ? {} : { windowId: currentWindowId };
     const tabs = await browserAPI.tabs.query(query);
     els.tabCount.textContent = `${tabs.length} Tab${tabs.length === 1 ? '' : 's'}`;
   }
 
-  // Show status toast
+  /**
+   * Displays a temporary status toast message to the user.
+   * @param {string} msg - The message to display.
+   * @param {string} tone - 'success' or 'error'.
+   */
   function showStatus(msg, tone = 'success') {
     els.status.textContent = msg;
     els.status.className = `status ${tone} show`;
@@ -128,7 +139,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Tab Loading Logic
+  /**
+   * Core function to load, search, and render tabs efficiently.
+   * Includes debouncing logic for the search input to save CPU cycles.
+   */
+  let searchTimeout;
   async function loadTabs() {
     // Load Open Tabs
     const openResult = await sendMessage({
@@ -143,18 +158,50 @@ document.addEventListener('DOMContentLoaded', () => {
     if (openResult.success) {
       renderTabList(els.openTabsList, openResult.results || [], true);
       
-      // Setup Search Filtering
+      // Setup Search Filtering with Debouncing (Memory/CPU optimization)
       els.tabSearch.oninput = (e) => {
-        const query = e.target.value.toLowerCase();
-        const filtered = openResult.results.filter(t => 
-          (t.title || '').toLowerCase().includes(query) || 
-          (t.url || '').toLowerCase().includes(query)
-        );
-        renderTabList(els.openTabsList, filtered, true);
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          const query = e.target.value.toLowerCase();
+          const filtered = openResult.results.filter(t => 
+            (t.title || '').toLowerCase().includes(query) || 
+            (t.url || '').toLowerCase().includes(query)
+          );
+          renderTabList(els.openTabsList, filtered, true);
+        }, 250);
       };
     }
   }
 
+  // Event Delegation for maximum performance (O(1) memory instead of O(N) closures)
+  els.openTabsList.addEventListener('click', async (e) => {
+    const row = e.target.closest('.result-item');
+    if (!row) return;
+
+    const tabId = parseInt(row.dataset.tabId, 10);
+    const windowId = parseInt(row.dataset.windowId, 10);
+    const url = row.dataset.url;
+    
+    if (e.target.closest('.close-btn')) {
+      e.stopPropagation();
+      await browserAPI.runtime.sendMessage({ action: 'closeTab', tabId });
+      loadTabs();
+      updateTabCount();
+      return;
+    }
+
+    if (row.dataset.isOpen === 'true') {
+      browserAPI.runtime.sendMessage({ action: 'focusTab', tabId, windowId });
+      window.close();
+    } else {
+      await browserAPI.tabs.create({ url, active: false });
+      loadTabs();
+    }
+  });
+
+  /**
+   * Renders tab lists efficiently using DocumentFragment to prevent DOM layout thrashing.
+   */
   function renderTabList(container, tabs, isOpen) {
     container.innerHTML = '';
     
@@ -163,9 +210,15 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    const fragment = document.createDocumentFragment();
+
     tabs.forEach(tab => {
       const row = document.createElement('div');
       row.className = `result-item ${tab.audible ? 'audible' : ''}`;
+      row.dataset.tabId = tab.id;
+      row.dataset.windowId = tab.windowId;
+      row.dataset.url = tab.url || '';
+      row.dataset.isOpen = isOpen;
       
       const faviconUrl = tab.favIconUrl || 'icons/icon16.png';
       
@@ -220,27 +273,10 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
       
-      if (isOpen) {
-        row.onclick = (e) => {
-          if (e.target.closest('.close-btn')) return;
-          browserAPI.runtime.sendMessage({ action: 'focusTab', tabId: tab.id, windowId: tab.windowId });
-          window.close();
-        };
-        row.querySelector('.close-btn').onclick = async (e) => {
-          e.stopPropagation();
-          await browserAPI.runtime.sendMessage({ action: 'closeTab', tabId: tab.id });
-          loadTabs();
-          updateTabCount();
-        };
-      } else {
-        row.onclick = async () => {
-          await browserAPI.tabs.create({ url: tab.url, active: false });
-          loadTabs();
-        };
-      }
-      
-      container.appendChild(row);
+      fragment.appendChild(row);
     });
+    
+    container.appendChild(fragment);
   }
 
   init();
